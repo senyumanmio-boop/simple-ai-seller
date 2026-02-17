@@ -13,20 +13,32 @@ async function getResponse(query) {
         const data = await response.json();
         return data.candidates[0].content.parts[0].text;
     } catch (error) {
-        return "Waduh, koneksi ke otak AI saya lagi error nih...";
+        return "Aduh, koneksi AI-nya lagi putus...";
     }
 }
 
-async function sendMessage() {
-    const input = document.getElementById("user-input");
-    const chatBox = document.getElementById("chat-box");
-    const text = input.value.trim();
-    if (!text) return;
+// Fungsi supaya tombol di web bisa jalan
+async function takeinput() {
+    const inputField = document.getElementById('input');
+    const messages = document.getElementById('messages');
+    const userText = inputField.value;
 
-    chatBox.innerHTML += `<p><b>Kamu:</b> ${text}</p>`;
-    input.value = "";
+    if (!userText) return;
 
-    const response = await getResponse(text);
-    chatBox.innerHTML += `<p><b>AI:</b> ${response}</p>`;
-    chatBox.scrollTop = chatBox.scrollHeight;
+    // Tampilkan chat kamu
+    messages.innerHTML += `<div id='buyerblock'>${userText}</div>`;
+    inputField.value = "";
+
+    // Ambil jawaban dari AI
+    const aiAnswer = await getResponse(userText);
+    
+    // Tampilkan jawaban AI
+    messages.innerHTML += `<div id='sellerblock'>${aiAnswer}</div>`;
 }
+
+// Supaya bisa enter buat kirim
+document.getElementById('input').addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') {
+        takeinput();
+    }
+});
