@@ -1,77 +1,32 @@
-messages = document.getElementById('messages')
-input = document.getElementById('input')
-sellerblock = document.getElementById('sellerblock')
-buyerblock = document.getElementById('buyerblock')
+const API_KEY = "AIzaSyCfhw09Q6lP1xKyRG-3gVzW9kaloXr5yzk";
 
-msgno = 0
-
-products = {
-"mobile":{price:12000},
-"tomato":{price:30},
-"rice":{price:60},
-"book":{price:500},
-"laptop":{price:25000},
-"chair":{price:350}
+async function getResponse(query) {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+    try {
+        const response = await fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: query }] }]
+            })
+        });
+        const data = await response.json();
+        return data.candidates[0].content.parts[0].text;
+    } catch (error) {
+        return "Waduh, koneksi ke otak AI saya lagi error nih...";
+    }
 }
 
+async function sendMessage() {
+    const input = document.getElementById("user-input");
+    const chatBox = document.getElementById("chat-box");
+    const text = input.value.trim();
+    if (!text) return;
 
-function taketheinput(event) {
-	// here is the js code for input processing
-	//if they hit the enter key 
-	if(event.key === "Enter"){
-// create a buyer message block
-		messages.innerHTML += buyerblock.outerHTML
-		// and change its id
-		msgno += 1
-		messages.lastChild.id = msgno
-		//now changing its text
-		messages.lastChild.childNodes[1].textContent = input.value
-		// finally process the input 
-		processinput(input.value.toLowerCase())
-		input.value = ""
+    chatBox.innerHTML += `<p><b>Kamu:</b> ${text}</p>`;
+    input.value = "";
 
-	}
-}
-
-function processinput(inputval){
-
-	if(inputval!=""){
-		messages.innerHTML += sellerblock.outerHTML
-		// and change its id
-		msgno += 1
-		messages.lastChild.id = msgno
-		//now changing its text
-		messages.lastChild.childNodes[1].textContent = reply(inputval)	
-	}
-
-}
-
-
-
-function reply(inputval) {
-	result = inputval.match(/(how)|(\w+)/g)
-
-	if(result.includes("how")){
-		return "fine"
-	}
-	if(result.includes("price")){
-		return recentproduct.price
-	}
-	
-	a="";
-	result.forEach(function(product){
-		if(products.hasOwnProperty(product)){
-			a = "Yes we have " + product
-			recentproduct = products[product]
-		}
-	})
-	if(a){
-		return a;
-	}
-
-
-	return "Sorry " + inputval + " is not available!"
-	// if (inputval === "How are you?") {
-	// 	return "I am fine"
-	// }
+    const response = await getResponse(text);
+    chatBox.innerHTML += `<p><b>AI:</b> ${response}</p>`;
+    chatBox.scrollTop = chatBox.scrollHeight;
 }
