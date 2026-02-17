@@ -13,32 +13,33 @@ async function getResponse(query) {
         const data = await response.json();
         return data.candidates[0].content.parts[0].text;
     } catch (error) {
-        return "Aduh, koneksi AI-nya lagi putus...";
+        return "Waduh, koneksi ke otak AI saya lagi error nih...";
     }
 }
 
-// Fungsi supaya tombol di web bisa jalan
-async function takeinput() {
-    const inputField = document.getElementById('input');
+// Fungsi utama biar chatnya muncul
+async function taketheinput() {
+    const input = document.getElementById('input');
     const messages = document.getElementById('messages');
-    const userText = inputField.value;
+    const userText = input.value;
 
     if (!userText) return;
 
-    // Tampilkan chat kamu
+    // Munculin chat kamu
     messages.innerHTML += `<div id='buyerblock'>${userText}</div>`;
-    inputField.value = "";
+    input.value = "";
 
-    // Ambil jawaban dari AI
+    // Ambil jawaban dari AI Gemini
     const aiAnswer = await getResponse(userText);
     
-    // Tampilkan jawaban AI
+    // Munculin jawaban AI
     messages.innerHTML += `<div id='sellerblock'>${aiAnswer}</div>`;
 }
 
-// Supaya bisa enter buat kirim
+// Biar bisa kirim pakai tombol Enter
 document.getElementById('input').addEventListener('keypress', function (e) {
     if (e.key === 'Enter') {
-        takeinput();
+        taketheinput();
     }
 });
+
