@@ -5,37 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Akimmcuy</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f9; display: flex; justify-content: center; padding: 20px; }
-        #chat-container { width: 100%; max-width: 500px; background: white; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); display: flex; flex-direction: column; height: 80vh; overflow: hidden; }
+        body { font-family: sans-serif; background: #f0f2f5; display: flex; justify-content: center; padding: 20px; }
+        #chat-container { width: 100%; max-width: 450px; background: white; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); display: flex; flex-direction: column; height: 85vh; }
         #messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-        .user-msg { align-self: flex-end; background: #007bff; color: white; padding: 10px 15px; border-radius: 15px 15px 0 15px; max-width: 80%; }
-        .ai-msg { align-self: flex-start; background: #e9e9eb; color: #333; padding: 10px 15px; border-radius: 15px 15px 15px 0; max-width: 80%; }
-        #input-area { display: flex; padding: 15px; border-top: 1px solid #eee; background: #fff; }
-        input { flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 25px; outline: none; margin-right: 10px; }
-        button { background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 25px; cursor: pointer; font-weight: bold; }
-        button:hover { background: #0056b3; }
+        .user-msg { align-self: flex-end; background: #0084ff; color: white; padding: 10px; border-radius: 15px 15px 0 15px; }
+        .ai-msg { align-self: flex-start; background: #e4e6eb; color: black; padding: 10px; border-radius: 15px 15px 15px 0; }
+        #input-area { display: flex; padding: 15px; border-top: 1px solid #ddd; }
+        input { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 20px; outline: none; }
+        button { background: #0084ff; color: white; border: none; padding: 0 20px; margin-left: 10px; border-radius: 20px; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div id="chat-container">
-    <div id="messages">
-        <div class="ai-msg"><b>AI:</b> Halo Akimmcuy! Akhirnya saya bangun. Mau nanya apa hari ini? 🔥</div>
-    </div>
+    <div id="messages"><div class="ai-msg"><b>AI:</b> Oke Akimmcuy, kali ini pasti bisa! Coba ketik sesuatu...</div></div>
     <div id="input-area">
-        <input type="text" id="user-input" placeholder="Ketik pesan..." autofocus>
+        <input type="text" id="user-input" placeholder="Ketik pesan...">
         <button onclick="prosesChat()">KIRIM</button>
     </div>
 </div>
 
 <script>
-const API_KEY = "AIzaSyCwVFXmF0ZSzVgzeqoGyNSekWHvC74eALA";
+// API KEY ASLI KAMU
+const API_KEY = "AIzaSyCwVFXmF0ZSzVgzeqoGyNSekWHvC74eALA"; 
 
 async function prosesChat() {
     const input = document.getElementById('user-input');
     const box = document.getElementById('messages');
     const text = input.value.trim();
-
     if (!text) return;
 
     box.innerHTML += `<div class="user-msg"><b>Kamu:</b> ${text}</div>`;
@@ -43,8 +40,8 @@ async function prosesChat() {
     box.scrollTop = box.scrollHeight;
 
     try {
-        // PAKAI MODEL gemini-1.0-pro VERSI v1beta (Paling Stabil)
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.0-pro:generateContent?key=${API_KEY}`;
+        // ALAMAT PALING BENAR (Gunakan v1/models/gemini-1.5-flash)
+        const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
         
         const res = await fetch(url, {
             method: "POST",
@@ -55,23 +52,22 @@ async function prosesChat() {
         const data = await res.json();
 
         if (data.error) {
-            box.innerHTML += `<div class="ai-msg"><b>Sistem:</b> Google bilang: ${data.error.message}</div>`;
+            box.innerHTML += `<div class="ai-msg"><b>Sistem:</b> Error - ${data.error.message}</div>`;
         } else {
             const reply = data.candidates[0].content.parts[0].text;
             box.innerHTML += `<div class="ai-msg"><b>AI:</b> ${reply}</div>`;
         }
     } catch (e) {
-        box.innerHTML += `<div class="ai-msg"><b>Sistem:</b> Koneksi putus, coba lagi!</div>`;
+        box.innerHTML += `<div class="ai-msg"><b>Sistem:</b> Jaringan bermasalah...</div>`;
     }
     box.scrollTop = box.scrollHeight;
 }
 
-document.getElementById('user-input').addEventListener('keypress', function (e) {
-    if (e.key === 'Enter') { prosesChat(); }
-});
+// Support Enter
+document.getElementById('user-input').onkeydown = function(e) {
+    if (e.keyCode == 13) prosesChat();
+};
 </script>
 </body>
 </html>
-
-
 
