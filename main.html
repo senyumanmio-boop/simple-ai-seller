@@ -39,10 +39,10 @@ async function kirim() {
     input.value = "";
     box.scrollTop = box.scrollHeight;
 
+    // KITA PAKAI JALUR V1 (YANG PALING DISUKAI GOOGLE SEKARANG)
+    const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+
     try {
-        // MENGGUNAKAN JALUR TERSTABIL TANPA EMEL-EMBEL BETA
-        const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
-        
         const res = await fetch(url, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -52,33 +52,14 @@ async function kirim() {
         const data = await res.json();
 
         if (data.error) {
-            // Jika masih error, gunakan model alternatif secara otomatis
-            box.innerHTML += `<div class="bubble ai" style="color:yellow">Mencoba jalur alternatif...</div>`;
-            return cobaLagi(text);
-        } else {
+            // Jika jalur V1 gagal, kita suruh user tunggu sebentar
+            box.innerHTML += `<div class="bubble ai" style="color:yellow"><b>Info:</b> Google sedang sinkronisasi kunci kamu. Coba lagi dalam 5-10 menit.</div>`;
+        } else if (data.candidates) {
             const reply = data.candidates[0].content.parts[0].text;
-            box.innerHTML += `<div class="bubble ai">${reply}</div>`;
+            box.innerHTML += `<div class="bubble ai"><b>AI:</b> ${reply}</div>`;
         }
     } catch (e) {
-        box.innerHTML += `<div class="bubble ai">Koneksi gangguan.</div>`;
-    }
-    box.scrollTop = box.scrollHeight;
-}
-
-async function cobaLagi(text) {
-    const box = document.getElementById('messages');
-    // Jalur cadangan menggunakan v1beta gemini-pro
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${API_KEY}`;
-    const res = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ contents: [{ parts: [{ text: text }] }] })
-    });
-    const data = await res.json();
-    if (data.candidates) {
-        box.innerHTML += `<div class="bubble ai">${data.candidates[0].content.parts[0].text}</div>`;
-    } else {
-        box.innerHTML += `<div class="bubble ai">Google sedang memvalidasi API Key kamu. Coba lagi dalam 30 menit.</div>`;
+        box.innerHTML += `<div class="bubble ai">Koneksi lagi sibuk, Cuy!</div>`;
     }
     box.scrollTop = box.scrollHeight;
 }
@@ -87,5 +68,6 @@ document.getElementById('user-input').onkeydown = (e) => { if(e.key === 'Enter')
 </script>
 </body>
 </html>
+
 
 
