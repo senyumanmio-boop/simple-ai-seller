@@ -12,11 +12,12 @@ async function prosesChat() {
 
     if (!text) return;
 
-    box.innerHTML += `<div style="color:blue;"><b>Kamu:</b> ${text}</div>`;
+    box.innerHTML += `<div style="color:blue; margin: 5px;"><b>Kamu:</b> ${text}</div>`;
     input.value = "";
 
     try {
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+        // KITA PAKAI MODEL 'gemini-pro' YANG LEBIH STABIL
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${API_KEY}`;
         const res = await fetch(url, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -25,23 +26,22 @@ async function prosesChat() {
         
         const data = await res.json();
 
-        // INI PENTING: Biar kita tahu Google ngomong apa kalau gagal
         if (data.error) {
-            box.innerHTML += `<div style="color:red;"><b>AI Error:</b> ${data.error.message}</div>`;
+            box.innerHTML += `<div style="color:red; margin: 5px;"><b>AI Error:</b> ${data.error.message}</div>`;
         } else {
             const reply = data.candidates[0].content.parts[0].text;
-            box.innerHTML += `<div style="color:red;"><b>AI:</b> ${reply}</div>`;
+            box.innerHTML += `<div style="color:red; margin: 5px;"><b>AI:</b> ${reply}</div>`;
         }
     } catch (e) {
-        box.innerHTML += `<div style="color:red;"><b>AI:</b> Waduh, beneran putus koneksinya!</div>`;
+        box.innerHTML += `<div style="color:red; margin: 5px;"><b>AI:</b> Gagal total, cek internet!</div>`;
     }
     box.scrollTop = box.scrollHeight;
 }
 
+// Pasang fungsi Enter
 document.getElementById('user-input').onkeydown = function(e) {
     if (e.keyCode == 13) { prosesChat(); }
-};
-</script>
+}; <script>
 
 <body>
 
@@ -78,5 +78,6 @@ document.getElementById('user-input').onkeydown = function(e) {
 </body>
 
 </html>
+
 
 
