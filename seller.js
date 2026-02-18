@@ -1,4 +1,4 @@
-const API_KEY = "AIzaSyCfhw09Q6lP1xKyRG-3gVzW9kaloXr5yzk";
+const API_KEY = "AIzaSyD-L0kG3n1m1_T3st_K3y_2026_Ok";
 
 async function getResponse(query) {
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
@@ -10,11 +10,10 @@ async function getResponse(query) {
                 contents: [{ parts: [{ text: query }] }]
             })
         });
-        const data = await response.json();
-        return data.candidates[0].content.parts[0].text;
-    } catch (error) {
-        return "Duh, otak AI saya lagi lemot, coba lagi ya!";
-    }
+       const data = await response.json();
+    console.log(data); // Tambahkan baris ini!
+    if (data.error) return "Error: " + data.error.message; 
+    return data.candidates[0].content.parts[0].text;
 }
 
 // FUNGSI INI YANG PENTING BIAR NGGAK ERROR TIAP KETIK HURUF
@@ -47,4 +46,5 @@ document.getElementById('input').addEventListener('keypress', function (e) {
         taketheinput();
     }
 });
+
 
