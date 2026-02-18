@@ -1,4 +1,4 @@
-const API_KEY = "AIzaSyCwVFXmF0ZSzVgzeqoGyNSekWHvC74eALA"; 
+const API_KEY = "AIzaSyCfhw09Q6lP1xKyRG-3gVzW9kaloXr5yzk"; 
 
 async function getResponse(query) {
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
@@ -56,3 +56,4 @@ document.addEventListener('DOMContentLoaded', () => {
 function taketheinput() { jalankanChat(); }
 function takeinput() { jalankanChat(); }
 function sendChat() { jalankanChat(); }
+
