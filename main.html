@@ -3,72 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat Akimmcuy</title>
+    <title>Chat AI Simple</title>
     <style>
-        body { font-family: sans-serif; background: #000; color: #fff; display: flex; justify-content: center; padding: 20px; }
-        #chat-container { width: 100%; max-width: 450px; background: #111; height: 85vh; display: flex; flex-direction: column; border-radius: 20px; border: 1px solid #444; }
-        #messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-        .bubble { padding: 12px; border-radius: 15px; max-width: 80%; }
-        .user { align-self: flex-end; background: #007bff; }
-        .ai { align-self: flex-start; background: #222; color: #fff; border: 1px solid #555; }
-        #input-area { display: flex; padding: 15px; border-top: 1px solid #333; }
-        input { flex: 1; background: #222; border: none; padding: 12px; border-radius: 10px; color: white; outline: none; }
-        button { background: #007bff; color: white; border: none; padding: 0 20px; margin-left: 10px; border-radius: 10px; cursor: pointer; font-weight: bold; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #000; color: #fff; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        #chat-window { width: 100%; max-width: 400px; background: #1a1a1a; height: 85vh; display: flex; flex-direction: column; border-radius: 15px; border: 1px solid #333; overflow: hidden; }
+        #messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .msg { padding: 10px 14px; border-radius: 12px; max-width: 80%; font-size: 15px; line-height: 1.4; }
+        .user { align-self: flex-end; background: #007bff; color: white; }
+        .ai { align-self: flex-start; background: #333; color: #eee; }
+        #input-area { display: flex; padding: 15px; background: #222; gap: 8px; }
+        input { flex: 1; background: #333; border: none; padding: 12px; border-radius: 8px; color: white; outline: none; }
+        button { background: #007bff; color: white; border: none; padding: 0 15px; border-radius: 8px; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
 
-<div id="chat-container">
-    <div id="messages"><div class="bubble ai">Siap Akimmcuy! Sistem sudah dibersihkan. Coba tes tanya apa saja sekarang.</div></div>
+<div id="chat-window">
+    <div id="messages">
+        <div class="msg ai">Halo! Ada yang bisa saya bantu?</div>
+    </div>
     <div id="input-area">
-        <input type="text" id="user-input" placeholder="Ketik pesan..." autocomplete="off">
-        <button onclick="kirim()">KIRIM</button>
+        <input type="text" id="user-input" placeholder="Tulis sesuatu..." autocomplete="off">
+        <button onclick="kirimPesan()">KIRIM</button>
     </div>
 </div>
 
 <script>
-const API_KEY = "AIzaSyCfhw09Q6lP1xKyRG-3gVzW9kaloXr5yzk";
+// Pakai Key yang baru (eALA)
+const KEY_API = "AIzaSyCwVFXmF0ZSzVgzeqoGyNSekWHvC74eALA";
 
-async function kirim() {
+async function kirimPesan() {
     const input = document.getElementById('user-input');
     const box = document.getElementById('messages');
     const text = input.value.trim();
+
     if (!text) return;
 
-    box.innerHTML += `<div class="bubble user">${text}</div>`;
+    // Tampilkan pesan kamu
+    box.innerHTML += `<div class="msg user">${text}</div>`;
     input.value = "";
     box.scrollTop = box.scrollHeight;
 
-    // KITA PAKAI JALUR V1 (YANG PALING DISUKAI GOOGLE SEKARANG)
-    const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
-
     try {
-        const res = await fetch(url, {
+        // Jalur resmi v1/gemini-1.5-flash
+        const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${KEY_API}`;
+        
+        const response = await fetch(url, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ contents: [{ parts: [{ text: text }] }] })
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: text }] }]
+            })
         });
-        
-        const data = await res.json();
+
+        const data = await response.json();
 
         if (data.error) {
-            // Jika jalur V1 gagal, kita suruh user tunggu sebentar
-            box.innerHTML += `<div class="bubble ai" style="color:yellow"><b>Info:</b> Google sedang sinkronisasi kunci kamu. Coba lagi dalam 5-10 menit.</div>`;
-        } else if (data.candidates) {
-            const reply = data.candidates[0].content.parts[0].text;
-            box.innerHTML += `<div class="bubble ai"><b>AI:</b> ${reply}</div>`;
+            // Jika Google masih proses validasi
+            box.innerHTML += `<div class="msg ai" style="color:#ff6b6b"><b>Sistem:</b> ${data.error.message}</div>`;
+        } else {
+            const jawaban = data.candidates[0].content.parts[0].text;
+            box.innerHTML += `<div class="msg ai">${jawaban}</div>`;
         }
-    } catch (e) {
-        box.innerHTML += `<div class="bubble ai">Koneksi lagi sibuk, Cuy!</div>`;
+    } catch (err) {
+        box.innerHTML += `<div class="msg ai" style="color:#ff6b6b">Koneksi gagal. Coba lagi nanti.</div>`;
     }
     box.scrollTop = box.scrollHeight;
 }
 
-document.getElementById('user-input').onkeydown = (e) => { if(e.key === 'Enter') kirim(); };
+// Support tombol Enter
+document.getElementById('user-input').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') kirimPesan();
+});
 </script>
+
 </body>
 </html>
-
-
 
 
