@@ -43,8 +43,8 @@ async function prosesChat() {
     box.scrollTop = box.scrollHeight;
 
     try {
-        // Alamat resmi Google Gemini (Tanpa Beta)
-        const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+        // PAKAI MODEL gemini-1.0-pro VERSI v1beta (Paling Stabil)
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.0-pro:generateContent?key=${API_KEY}`;
         
         const res = await fetch(url, {
             method: "POST",
@@ -55,7 +55,7 @@ async function prosesChat() {
         const data = await res.json();
 
         if (data.error) {
-            box.innerHTML += `<div class="ai-msg"><b>Sistem:</b> Wah, ada masalah: ${data.error.message}</div>`;
+            box.innerHTML += `<div class="ai-msg"><b>Sistem:</b> Google bilang: ${data.error.message}</div>`;
         } else {
             const reply = data.candidates[0].content.parts[0].text;
             box.innerHTML += `<div class="ai-msg"><b>AI:</b> ${reply}</div>`;
@@ -72,5 +72,6 @@ document.getElementById('user-input').addEventListener('keypress', function (e) 
 </script>
 </body>
 </html>
+
 
 
