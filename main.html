@@ -2,40 +2,47 @@
     <input type="text" id="user-input" placeholder="Ketik di sini...">
     <button onclick="prosesChat()" style="padding: 10px; background: blue; color: white; border: none; border-radius: 5px; cursor: pointer;">KIRIM</button>
 </div>
-
 <script>
-    const API_KEY = "AIzaSyCwVFXmF0ZSzVgzeqoGyNSekWHvC74eALA";
+const API_KEY = "AIzaSyCwVFXmF0ZSzVgzeqoGyNSekWHvC74eALA";
 
-    async function prosesChat() {
-        const input = document.getElementById('user-input');
-        const box = document.getElementById('messages');
-        const text = input.value.trim();
+async function prosesChat() {
+    const input = document.getElementById('user-input');
+    const box = document.getElementById('messages');
+    const text = input.value.trim();
 
-        if (!text) return;
+    if (!text) return;
 
-        box.innerHTML += `<div class="user-msg"><b>Kamu:</b> ${text}</div>`;
-        input.value = "";
+    box.innerHTML += `<div style="color:blue;"><b>Kamu:</b> ${text}</div>`;
+    input.value = "";
 
-        try {
-            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ contents: [{ parts: [{ text: text }] }] })
-            });
-            const data = await res.json();
+    try {
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+        const res = await fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ contents: [{ parts: [{ text: text }] }] })
+        });
+        
+        const data = await res.json();
+
+        // INI PENTING: Biar kita tahu Google ngomong apa kalau gagal
+        if (data.error) {
+            box.innerHTML += `<div style="color:red;"><b>AI Error:</b> ${data.error.message}</div>`;
+        } else {
             const reply = data.candidates[0].content.parts[0].text;
-            box.innerHTML += `<div class="ai-msg"><b>AI:</b> ${reply}</div>`;
-        } catch (e) {
-            box.innerHTML += `<div class="ai-msg"><b>AI:</b> Error koneksi...</div>`;
+            box.innerHTML += `<div style="color:red;"><b>AI:</b> ${reply}</div>`;
         }
-        box.scrollTop = box.scrollHeight;
+    } catch (e) {
+        box.innerHTML += `<div style="color:red;"><b>AI:</b> Waduh, beneran putus koneksinya!</div>`;
     }
+    box.scrollTop = box.scrollHeight;
+}
 
-    // Biar Enter tetep bisa
-    document.getElementById('user-input').onkeydown = function(e) {
-        if (e.keyCode == 13) { prosesChat(); }
-    };
+document.getElementById('user-input').onkeydown = function(e) {
+    if (e.keyCode == 13) { prosesChat(); }
+};
 </script>
+
 <body>
 
 	<div id="box"> 
@@ -71,4 +78,5 @@
 </body>
 
 </html>
+
 
