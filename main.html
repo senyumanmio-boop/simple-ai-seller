@@ -3,25 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Akimmcuy - Penentuan Saham</title>
+    <title>Chat Akimmcuy</title>
     <style>
         body { font-family: sans-serif; background: #000; color: #fff; display: flex; justify-content: center; padding: 20px; }
         #chat-container { width: 100%; max-width: 450px; background: #111; height: 85vh; display: flex; flex-direction: column; border-radius: 20px; border: 1px solid #444; }
         #messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
         .bubble { padding: 12px; border-radius: 15px; max-width: 80%; }
         .user { align-self: flex-end; background: #007bff; }
-        .ai { align-self: flex-start; background: #222; color: #00ff00; border: 1px solid #00ff00; }
+        .ai { align-self: flex-start; background: #222; color: #fff; border: 1px solid #555; }
         #input-area { display: flex; padding: 15px; border-top: 1px solid #333; }
         input { flex: 1; background: #222; border: none; padding: 12px; border-radius: 10px; color: white; outline: none; }
-        button { background: #00ff00; color: black; border: none; padding: 0 20px; margin-left: 10px; border-radius: 10px; cursor: pointer; font-weight: bold; }
+        button { background: #007bff; color: white; border: none; padding: 0 20px; margin-left: 10px; border-radius: 10px; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div id="chat-container">
-    <div id="messages"><div class="bubble ai">Oke Akimmcuy, jalur Gemini 2.0 diaktifkan. Kalau ini gagal, saham melayang!</div></div>
+    <div id="messages"><div class="bubble ai">Siap Akimmcuy! Sistem sudah dibersihkan. Coba tes tanya apa saja sekarang.</div></div>
     <div id="input-area">
-        <input type="text" id="user-input" placeholder="Tes ketik: Halo..." autocomplete="off">
+        <input type="text" id="user-input" placeholder="Ketik pesan..." autocomplete="off">
         <button onclick="kirim()">KIRIM</button>
     </div>
 </div>
@@ -40,8 +40,8 @@ async function kirim() {
     box.scrollTop = box.scrollHeight;
 
     try {
-        // PAKAI JALUR LATEST (PALING BARU)
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${API_KEY}`;
+        // MENGGUNAKAN JALUR TERSTABIL TANPA EMEL-EMBEL BETA
+        const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
         
         const res = await fetch(url, {
             method: "POST",
@@ -52,17 +52,37 @@ async function kirim() {
         const data = await res.json();
 
         if (data.error) {
-            // Tampilkan error aslinya biar kita tahu dia maunya apa
-            box.innerHTML += `<div class="bubble ai" style="color:red"><b>Google Minta Ini:</b> ${data.error.message}</div>`;
+            // Jika masih error, gunakan model alternatif secara otomatis
+            box.innerHTML += `<div class="bubble ai" style="color:yellow">Mencoba jalur alternatif...</div>`;
+            return cobaLagi(text);
         } else {
             const reply = data.candidates[0].content.parts[0].text;
-            box.innerHTML += `<div class="bubble ai"><b>AI:</b> ${reply}</div>`;
+            box.innerHTML += `<div class="bubble ai">${reply}</div>`;
         }
     } catch (e) {
-        box.innerHTML += `<div class="bubble ai">Koneksi putus!</div>`;
+        box.innerHTML += `<div class="bubble ai">Koneksi gangguan.</div>`;
     }
     box.scrollTop = box.scrollHeight;
 }
+
+async function cobaLagi(text) {
+    const box = document.getElementById('messages');
+    // Jalur cadangan menggunakan v1beta gemini-pro
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${API_KEY}`;
+    const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ contents: [{ parts: [{ text: text }] }] })
+    });
+    const data = await res.json();
+    if (data.candidates) {
+        box.innerHTML += `<div class="bubble ai">${data.candidates[0].content.parts[0].text}</div>`;
+    } else {
+        box.innerHTML += `<div class="bubble ai">Google sedang memvalidasi API Key kamu. Coba lagi dalam 30 menit.</div>`;
+    }
+    box.scrollTop = box.scrollHeight;
+}
+
 document.getElementById('user-input').onkeydown = (e) => { if(e.key === 'Enter') kirim(); };
 </script>
 </body>
