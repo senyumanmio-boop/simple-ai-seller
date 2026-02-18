@@ -11,42 +11,48 @@ async function getResponse(query) {
             })
         });
         const data = await response.json();
-        if (data.error) return "Waduh, API Key kamu bermasalah nih.";
+        if (data.error) return "Error: " + data.error.message;
         return data.candidates[0].content.parts[0].text;
     } catch (error) {
-        return "Koneksi internet kamu lagi nggak stabil nih...";
+        return "Koneksi ke AI terputus, coba cek internet kamu...";
     }
 }
 
-// FUNGSI UTAMA (Kita buat dua nama biar nggak bentrok sama HTML)
-async function sendChat() {
-    const inputField = document.getElementById('input');
+// FUNGSI UTAMA UNTUK JALANIN CHAT
+async function jalankanChat() {
+    const input = document.getElementById('input');
     const messages = document.getElementById('messages');
-    const userText = inputField.value.trim();
+    
+    if (!input || !messages) return;
+    
+    const text = input.value.trim();
+    if (!text) return;
 
-    if (!userText) return;
-
-    // Tampilkan pesan kamu
-    messages.innerHTML += `<div style="text-align: right; margin: 10px; color: blue;"><b>Kamu:</b> ${userText}</div>`;
-    inputField.value = "";
+    // Tampilkan chat kamu
+    messages.innerHTML += `<div style="text-align: right; margin: 10px; color: blue; font-family: sans-serif;"><b>Kamu:</b> ${text}</div>`;
+    input.value = "";
 
     // Ambil jawaban AI
-    const aiAnswer = await getResponse(userText);
+    const jawaban = await getResponse(text);
     
     // Tampilkan jawaban AI
-    messages.innerHTML += `<div style="text-align: left; margin: 10px; color: red;"><b>AI:</b> ${aiAnswer}</div>`;
-    
-    // Auto scroll ke bawah
+    messages.innerHTML += `<div style="text-align: left; margin: 10px; color: red; font-family: sans-serif;"><b>AI:</b> ${jawaban}</div>`;
     messages.scrollTop = messages.scrollHeight;
 }
 
-// SUPAYA ENTER BISA JALAN
-document.getElementById('input').addEventListener('keydown', function (e) {
-    if (e.key === 'Enter') {
-        sendChat();
+// PASANG DETEKSI ENTER SECARA OTOMATIS
+document.addEventListener('DOMContentLoaded', () => {
+    const inputField = document.getElementById('input');
+    if (inputField) {
+        inputField.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                jalankanChat();
+            }
+        });
     }
 });
 
-// Cadangan jika HTML memanggil nama fungsi lain
-function taketheinput() { sendChat(); }
-function takeinput() { sendChat(); }
+// CADANGAN NAMA FUNGSI BIAR PASTI JALAN
+function taketheinput() { jalankanChat(); }
+function takeinput() { jalankanChat(); }
+function sendChat() { jalankanChat(); }
