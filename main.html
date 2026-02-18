@@ -1,9 +1,38 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<title>Simple AI Seller</title>
-	<link rel="stylesheet" type="text/css" href="style.css">
-</head>
+<script>
+const API_KEY = "AIzaSyCwVFXmF0ZSzVgzeqoGyNSekWHvC74eALA";
+
+async function getResponse(query) {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+    try {
+        const response = await fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ contents: [{ parts: [{ text: query }] }] })
+        });
+        const data = await response.json();
+        return data.candidates[0].content.parts[0].text;
+    } catch (e) { return "Koneksi AI error..."; }
+}
+
+async function gasChat() {
+    const input = document.getElementById('input');
+    const msgBox = document.getElementById('messages');
+    if (!input.value.trim()) return;
+
+    msgBox.innerHTML += `<div style="text-align:right; margin:10px; color:blue;"><b>Kamu:</b> ${input.value}</div>`;
+    const userTeks = input.value;
+    input.value = "";
+
+    const botReply = await getResponse(userTeks);
+    msgBox.innerHTML += `<div style="text-align:left; margin:10px; color:red;"><b>AI:</b> ${botReply}</div>`;
+    msgBox.scrollTop = msgBox.scrollHeight;
+}
+
+// DETEKSI ENTER LANGSUNG DI SINI
+document.getElementById('input').onkeydown = function(e) {
+    if (e.keyCode == 13) { gasChat(); }
+};
+</script>
 <body>
 
 	<div id="box"> 
@@ -37,4 +66,5 @@
 	</div>
 <script type="text/javascript" src="seller.js"></script>
 </body>
+
 </html>
