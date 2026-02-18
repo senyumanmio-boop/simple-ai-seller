@@ -3,69 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Akimmcuy - Saham Aman</title>
+    <title>AI Akimmcuy - Penentuan Saham</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #121212; color: white; display: flex; justify-content: center; padding: 20px; }
-        #chat-container { width: 100%; max-width: 450px; background: #1e1e1e; height: 85vh; display: flex; flex-direction: column; border-radius: 15px; border: 1px solid #333; overflow: hidden; }
+        body { font-family: sans-serif; background: #000; color: #fff; display: flex; justify-content: center; padding: 20px; }
+        #chat-container { width: 100%; max-width: 450px; background: #111; height: 85vh; display: flex; flex-direction: column; border-radius: 20px; border: 1px solid #444; }
         #messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-        .msg { padding: 12px; border-radius: 12px; max-width: 85%; line-height: 1.5; }
-        .user { align-self: flex-end; background: #007bff; color: white; }
-        .ai { align-self: flex-start; background: #333; color: #eee; }
-        #input-area { display: flex; padding: 15px; background: #252525; border-top: 1px solid #333; }
-        input { flex: 1; background: #333; border: none; padding: 12px; border-radius: 8px; color: white; outline: none; }
-        button { background: #007bff; color: white; border: none; padding: 0 20px; margin-left: 10px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .bubble { padding: 12px; border-radius: 15px; max-width: 80%; }
+        .user { align-self: flex-end; background: #007bff; }
+        .ai { align-self: flex-start; background: #222; color: #00ff00; border: 1px solid #00ff00; }
+        #input-area { display: flex; padding: 15px; border-top: 1px solid #333; }
+        input { flex: 1; background: #222; border: none; padding: 12px; border-radius: 10px; color: white; outline: none; }
+        button { background: #00ff00; color: black; border: none; padding: 0 20px; margin-left: 10px; border-radius: 10px; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div id="chat-container">
-    <div id="messages"><div class="msg ai"><b>AI:</b> Oke Akimmcuy, saham Gemini aman kan? Coba tes tanya apa aja sekarang!</div></div>
+    <div id="messages"><div class="bubble ai">Oke Akimmcuy, jalur Gemini 2.0 diaktifkan. Kalau ini gagal, saham melayang!</div></div>
     <div id="input-area">
-        <input type="text" id="user-input" placeholder="Tulis pesan..." autocomplete="off">
-        <button onclick="kirimChat()">KIRIM</button>
+        <input type="text" id="user-input" placeholder="Tes ketik: Halo..." autocomplete="off">
+        <button onclick="kirim()">KIRIM</button>
     </div>
 </div>
 
 <script>
-// API KEY ASLI KAMU
-const API_KEY = "AIzaSyCwVFXmF0ZSzVgzeqoGyNSekWHvC74eALA"; 
+const API_KEY = "AIzaSyCwVFXmF0ZSzVgzeqoGyNSekWHvC74eALA";
 
-async function kirimChat() {
+async function kirim() {
     const input = document.getElementById('user-input');
     const box = document.getElementById('messages');
     const text = input.value.trim();
     if (!text) return;
 
-    box.innerHTML += `<div class="msg user">${text}</div>`;
+    box.innerHTML += `<div class="bubble user">${text}</div>`;
     input.value = "";
     box.scrollTop = box.scrollHeight;
 
     try {
-        // JALUR RESMI v1/models/gemini-1.5-flash
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
+        // KITA PAKAI MODEL TERBARU: gemini-2.0-flash-exp
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${API_KEY}`;
+        
+        const res = await fetch(url, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                contents: [{ parts: [{ text: text }] }]
-            })
+            body: JSON.stringify({ contents: [{ parts: [{ text: text }] }] })
         });
         
-        const data = await response.json();
+        const data = await res.json();
 
         if (data.error) {
-            box.innerHTML += `<div class="msg ai" style="color:#ff6b6b"><b>Sistem:</b> ${data.error.message}</div>`;
-        } else if (data.candidates && data.candidates[0].content) {
+            box.innerHTML += `<div class="bubble ai" style="color:red"><b>Google Bilang:</b> ${data.error.message}</div>`;
+        } else {
             const reply = data.candidates[0].content.parts[0].text;
-            box.innerHTML += `<div class="msg ai">${reply}</div>`;
+            box.innerHTML += `<div class="bubble ai"><b>AI:</b> ${reply}</div>`;
         }
     } catch (e) {
-        box.innerHTML += `<div class="msg ai">Aduh, koneksi lagi ngadat...</div>`;
+        box.innerHTML += `<div class="bubble ai">Koneksi macet, Akimmcuy!</div>`;
     }
     box.scrollTop = box.scrollHeight;
 }
-
-document.getElementById('user-input').onkeydown = (e) => { if(e.key === 'Enter') kirimChat(); };
+document.getElementById('user-input').onkeydown = (e) => { if(e.key === 'Enter') kirim(); };
 </script>
-
 </body>
 </html>
