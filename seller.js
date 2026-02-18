@@ -1,4 +1,4 @@
-const API_KEY = "AIzaSyD-L0kG3n1m1_T3st_K3y_2026_Ok";
+const API_KEY = "AIzaSyCwVFXmF0ZSzVgzeqoGyNSekWHvC74eALA";
 
 async function getResponse(query) {
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
@@ -46,5 +46,6 @@ document.getElementById('input').addEventListener('keypress', function (e) {
         taketheinput();
     }
 });
+
 
 
