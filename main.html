@@ -1,37 +1,40 @@
+<div id="input-area">
+    <input type="text" id="user-input" placeholder="Ketik di sini...">
+    <button onclick="prosesChat()" style="padding: 10px; background: blue; color: white; border: none; border-radius: 5px; cursor: pointer;">KIRIM</button>
+</div>
+
 <script>
-const API_KEY = "AIzaSyCwVFXmF0ZSzVgzeqoGyNSekWHvC74eALA";
+    const API_KEY = "AIzaSyCwVFXmF0ZSzVgzeqoGyNSekWHvC74eALA";
 
-async function getResponse(query) {
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
-    try {
-        const response = await fetch(url, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ contents: [{ parts: [{ text: query }] }] })
-        });
-        const data = await response.json();
-        return data.candidates[0].content.parts[0].text;
-    } catch (e) { return "Koneksi AI error..."; }
-}
+    async function prosesChat() {
+        const input = document.getElementById('user-input');
+        const box = document.getElementById('messages');
+        const text = input.value.trim();
 
-async function gasChat() {
-    const input = document.getElementById('input');
-    const msgBox = document.getElementById('messages');
-    if (!input.value.trim()) return;
+        if (!text) return;
 
-    msgBox.innerHTML += `<div style="text-align:right; margin:10px; color:blue;"><b>Kamu:</b> ${input.value}</div>`;
-    const userTeks = input.value;
-    input.value = "";
+        box.innerHTML += `<div class="user-msg"><b>Kamu:</b> ${text}</div>`;
+        input.value = "";
 
-    const botReply = await getResponse(userTeks);
-    msgBox.innerHTML += `<div style="text-align:left; margin:10px; color:red;"><b>AI:</b> ${botReply}</div>`;
-    msgBox.scrollTop = msgBox.scrollHeight;
-}
+        try {
+            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ contents: [{ parts: [{ text: text }] }] })
+            });
+            const data = await res.json();
+            const reply = data.candidates[0].content.parts[0].text;
+            box.innerHTML += `<div class="ai-msg"><b>AI:</b> ${reply}</div>`;
+        } catch (e) {
+            box.innerHTML += `<div class="ai-msg"><b>AI:</b> Error koneksi...</div>`;
+        }
+        box.scrollTop = box.scrollHeight;
+    }
 
-// DETEKSI ENTER LANGSUNG DI SINI
-document.getElementById('input').onkeydown = function(e) {
-    if (e.keyCode == 13) { gasChat(); }
-};
+    // Biar Enter tetep bisa
+    document.getElementById('user-input').onkeydown = function(e) {
+        if (e.keyCode == 13) { prosesChat(); }
+    };
 </script>
 <body>
 
@@ -68,3 +71,4 @@ document.getElementById('input').onkeydown = function(e) {
 </body>
 
 </html>
+
