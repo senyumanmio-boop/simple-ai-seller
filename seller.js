@@ -1,5 +1,4 @@
-const API_KEY = "AIzaSyB54xf2a9elcJxOLeR8YQRbf5O3vwCG9gY"; // Kunci dari kamu
-
+const API_KEY = "AIzaSyDG81x5j3r6bwmH3advkDCLVzKGaiPepeU
 async function chatDenganAI(pesan) {
     // Pake url v1beta supaya model Flash-nya terbaca
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
@@ -36,4 +35,5 @@ async function chatDenganAI(pesan) {
 
     return data.candidates[0].content.parts[0].text;
 }
+
 
