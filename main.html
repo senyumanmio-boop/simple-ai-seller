@@ -47,7 +47,7 @@ async function kirimPesan() {
 
     try {
         // Jalur resmi v1/gemini-1.5-flash
-        const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${KEY_API}`;
+        const url = `https://generativelanguage.googleapis.com/v1/models/gemini-pro-flash:generateContent?key=${KEY_API}`;
         
         const response = await fetch(url, {
             method: "POST",
@@ -80,5 +80,6 @@ document.getElementById('user-input').addEventListener('keypress', (e) => {
 
 </body>
 </html>
+
 
 
