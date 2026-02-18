@@ -1,4 +1,4 @@
-const API_KEY = "AIzaSyCwVFXmF0ZSzVgzeqoGyNSekWHvC74eALA";
+const API_KEY = "AIzaSyCwVFXmF0ZSzVgzeqoGyNSekWHvC74eALA"; 
 
 async function getResponse(query) {
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
@@ -10,27 +10,27 @@ async function getResponse(query) {
                 contents: [{ parts: [{ text: query }] }]
             })
         });
-       const data = await response.json();
-    console.log(data); // Tambahkan baris ini!
-    if (data.error) return "Error: " + data.error.message; 
-    return data.candidates[0].content.parts[0].text;
+        const data = await response.json();
+        if (data.error) return "Waduh, API Key kamu bermasalah nih.";
+        return data.candidates[0].content.parts[0].text;
+    } catch (error) {
+        return "Koneksi internet kamu lagi nggak stabil nih...";
+    }
 }
 
-// FUNGSI INI YANG PENTING BIAR NGGAK ERROR TIAP KETIK HURUF
-async function taketheinput() {
+// FUNGSI UTAMA (Kita buat dua nama biar nggak bentrok sama HTML)
+async function sendChat() {
     const inputField = document.getElementById('input');
     const messages = document.getElementById('messages');
     const userText = inputField.value.trim();
 
     if (!userText) return;
 
-    // Tampilkan chat kamu di layar
+    // Tampilkan pesan kamu
     messages.innerHTML += `<div style="text-align: right; margin: 10px; color: blue;"><b>Kamu:</b> ${userText}</div>`;
-    
-    // Kosongkan kotak ketik
     inputField.value = "";
 
-    // Ambil jawaban AI (Cuma dipanggil SEKALI di sini)
+    // Ambil jawaban AI
     const aiAnswer = await getResponse(userText);
     
     // Tampilkan jawaban AI
@@ -40,12 +40,13 @@ async function taketheinput() {
     messages.scrollTop = messages.scrollHeight;
 }
 
-// Hapus event listener 'oninput' kalau ada, ganti pakai ini:
-document.getElementById('input').addEventListener('keypress', function (e) {
+// SUPAYA ENTER BISA JALAN
+document.getElementById('input').addEventListener('keydown', function (e) {
     if (e.key === 'Enter') {
-        taketheinput();
+        sendChat();
     }
 });
 
-
-
+// Cadangan jika HTML memanggil nama fungsi lain
+function taketheinput() { sendChat(); }
+function takeinput() { sendChat(); }
