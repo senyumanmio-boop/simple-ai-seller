@@ -1,5 +1,5 @@
 // --- MASUKKAN API KEY ANDA DI DALAM TANDA KUTIP DI BAWAH INI ---
-const API_KEY = "AIzaSyC1rSdFmAxtxe0JA8ibRGCBruC3f0Y9wc8I"; 
+const API_KEY = "AIzaSyC1rSdFmAxtxe0JA8ibRGCBruC3f0Y9wc8"; 
 
 async function sendMessage() {
     const inputField = document.getElementById("user-input");
@@ -48,3 +48,4 @@ document.getElementById("send-btn").addEventListener("click", sendMessage);
 document.getElementById("user-input").addEventListener("keypress", function(event) {
     if (event.key === "Enter") sendMessage();
 });
+
