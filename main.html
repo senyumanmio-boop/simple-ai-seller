@@ -4,68 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Smart Seller</title>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
-        body { background: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; }
-        .chat-card { width: 400px; height: 600px; background: white; border-radius: 15px; display: flex; flex-direction: column; box-shadow: 0 10px 25px rgba(0,0,0,0.1); overflow: hidden; }
-        .chat-header { background: #4f46e5; color: white; padding: 20px; }
-        .chat-box { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; background: #f9fafb; }
-        .msg { padding: 10px 15px; border-radius: 15px; max-width: 80%; font-size: 14px; }
-        .bot-msg { background: #e5e7eb; align-self: flex-start; }
-        .user-msg { background: #4f46e5; color: white; align-self: flex-end; }
-        .chat-input-area { padding: 15px; border-top: 1px solid #eee; display: flex; gap: 10px; }
-        input { flex: 1; padding: 10px 15px; border: 1px solid #ddd; border-radius: 25px; outline: none; }
-        button { background: #4f46e5; color: white; border: none; padding: 10px 20px; border-radius: 25px; cursor: pointer; }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="chat-card">
-        <div class="chat-header"><h2>Smart Seller Bot</h2></div>
-        <div id="chat-box" class="chat-box">
-            <div class="msg bot-msg">Halo! Saya asisten AI. Ada yang bisa dibantu?</div>
+        <div class="chat-header">
+            <div class="bot-info">
+                <div class="bot-avatar">AI</div>
+                <div>
+                    <h2>Smart Seller Bot</h2>
+                    <p>Online | Siap Melayani</p>
+                </div>
+            </div>
         </div>
+
+        <div id="chat-box" class="chat-box">
+            <div class="msg bot-msg">Halo! Saya asisten AI Anda. Ada yang bisa saya bantu tawarkan hari ini?</div>
+        </div>
+
         <div class="chat-input-area">
-            <input type="text" id="user-input" placeholder="Ketik pesan...">
-            <button onclick="handleChat()">Kirim</button>
+            <input type="text" id="user-input" placeholder="Tulis pesan Anda di sini..." autocomplete="off">
+            <button id="send-btn">Kirim</button>
         </div>
     </div>
 
-    <script>
-        const API_KEY = "AIzaSyB54xf2a9elcJxOLeR8YQRbf5O3vwCG9gY"; // <-- GANTI INI
-
-        async function handleChat() {
-            const input = document.getElementById('user-input');
-            const chatBox = document.getElementById('chat-box');
-            const message = input.value.trim();
-            if (!message) return;
-
-            // User Message
-            const uDiv = document.createElement('div');
-            uDiv.className = 'msg user-msg';
-            uDiv.innerText = message;
-            chatBox.appendChild(uDiv);
-            input.value = '';
-
-            // Bot Loading
-            const bDiv = document.createElement('div');
-            bDiv.className = 'msg bot-msg';
-            bDiv.innerText = 'Mengetik...';
-            chatBox.appendChild(bDiv);
-            chatBox.scrollTop = chatBox.scrollHeight;
-
-            try {
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: message }] }] })
-                });
-                const data = await response.json();
-                bDiv.innerText = data.candidates[0].content.parts[0].text;
-            } catch (e) {
-                bDiv.innerText = "Error! Cek API Key atau koneksi.";
-            }
-            chatBox.scrollTop = chatBox.scrollHeight;
-        }
-    </script>
+    <script src="seller.js"></script>
 </body>
 </html>
+
