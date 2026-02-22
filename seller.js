@@ -1,55 +1,50 @@
-const chatBox = document.getElementById('chat-box');
-const userInput = document.getElementById('user-input');
-const sendBtn = document.getElementById('send-btn');
+// --- MASUKKAN API KEY ANDA DI DALAM TANDA KUTIP DI BAWAH INI ---
+const API_KEY = "AIzaSyC1rSdFmAxtxe0JA8ibRGCBruC3f0Y9wc8I"; 
 
-// MASUKKAN API KEY ANDA DI SINI
-const API_KEY = "AIzaSyAVhjzDV3Ib60pMOfRshBqlYLp2nlL6rTU";
+async function sendMessage() {
+    const inputField = document.getElementById("user-input");
+    const chatBox = document.getElementById("chat-box");
+    const message = inputField.value.trim();
 
-async function getAIResponse(message) {
+    if (!message) return;
+
+    // Tampilkan pesan user
+    chatBox.innerHTML += `<div class="message user">${message}</div>`;
+    inputField.value = "";
+
+    // Tampilkan status loading
+    const loadingId = "load-" + Date.now();
+    chatBox.innerHTML += `<div id="${loadingId}" class="message bot">Sedang berpikir...</div>`;
+    chatBox.scrollTop = chatBox.scrollHeight;
+
     try {
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                contents: [{ parts: [{ text: message }] }]
-            })
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ contents: [{ parts: [{ text: message }] }] })
         });
 
         const data = await response.json();
-        return data.candidates[0].content.parts[0].text;
-    } catch (error) {
-        return "Maaf, sepertinya ada gangguan koneksi. Coba lagi ya!";
-    }
-}
 
-function appendMessage(text, type) {
-    const msgDiv = document.createElement('div');
-    msgDiv.className = `msg ${type}-msg`;
-    msgDiv.innerText = text;
-    chatBox.appendChild(msgDiv);
+        // Deteksi error dari Google
+        if (!response.ok) {
+            let errorMsg = data.error ? data.error.message : "Error tidak diketahui.";
+            throw new Error(errorMsg);
+        }
+
+        const botReply = data.candidates[0].content.parts[0].text;
+        document.getElementById(loadingId).outerHTML = `<div class="message bot">${botReply}</div>`;
+
+    } catch (error) {
+        // Jika gagal, tampilkan pesan error merah di chat
+        document.getElementById(loadingId).outerHTML = `<div class="message bot error"><b>Gagal Terhubung:</b><br>${error.message}</div>`;
+    }
+
     chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-async function handleChat() {
-    const text = userInput.value.trim();
-    if (!text) return;
-
-    appendMessage(text, 'user');
-    userInput.value = '';
-
-    // Tampilkan loading sederhana
-    const loadingDiv = document.createElement('div');
-    loadingDiv.className = 'msg bot-msg';
-    loadingDiv.innerText = 'Sedang berpikir...';
-    chatBox.appendChild(loadingDiv);
-
-    const aiText = await getAIResponse(text);
-    chatBox.removeChild(loadingDiv);
-    appendMessage(aiText, 'bot');
-}
-
-sendBtn.addEventListener('click', handleChat);
-userInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') handleChat();
+// Menjalankan fungsi saat tombol diklik atau Enter ditekan
+document.getElementById("send-btn").addEventListener("click", sendMessage);
+document.getElementById("user-input").addEventListener("keypress", function(event) {
+    if (event.key === "Enter") sendMessage();
 });
-
