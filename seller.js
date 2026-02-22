@@ -3,7 +3,7 @@ const userInput = document.getElementById('user-input');
 const sendBtn = document.getElementById('send-btn');
 
 // MASUKKAN API KEY ANDA DI SINI
-const API_KEY = "AIzaSyB54xf2a9elcJxOLeR8YQRbf5O3vwCG9gY";
+const API_KEY = "AIzaSyAVhjzDV3Ib60pMOfRshBqlYLp2nlL6rTU";
 
 async function getAIResponse(message) {
     try {
@@ -52,3 +52,4 @@ sendBtn.addEventListener('click', handleChat);
 userInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') handleChat();
 });
+
