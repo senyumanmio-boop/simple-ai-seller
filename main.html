@@ -3,31 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Chatbot Saya</title>
+    <title>AI Penjual Pintar</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 h-screen flex flex-col">
+<body class="bg-slate-100 h-screen flex flex-col font-sans">
 
-    <header class="bg-blue-600 text-white p-4 text-center shadow-lg">
-        <h1 class="text-xl font-bold">My Personal AI</h1>
+    <header class="bg-indigo-700 text-white p-5 text-center shadow-md">
+        <h1 class="text-2xl font-bold">Smart AI Seller</h1>
+        <p class="text-sm opacity-80">Siap membantu jualan Anda 24/7</p>
     </header>
 
-    <div id="chat-container" class="flex-1 overflow-y-auto p-4 space-y-4">
-        <div class="bg-white p-3 rounded-lg shadow-sm max-w-[80%]">
-            Halo! Saya AI buatan Anda. Ada yang bisa saya bantu?
+    <div id="chat-container" class="flex-1 overflow-y-auto p-6 space-y-4">
+        <div class="bg-white p-4 rounded-2xl shadow-sm max-w-[85%] border border-slate-200">
+            Halo! Saya AI Penjual. Ada yang bisa saya bantu tawarkan hari ini?
         </div>
     </div>
 
-    <div class="p-4 bg-white border-t flex gap-2">
-        <input type="text" id="user-input" placeholder="Tanya sesuatu..." 
-            class="flex-1 border rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-        <button onclick="sendMessage()" class="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700">
+    <div class="p-4 bg-white border-t border-slate-200 flex gap-3 shadow-[0_-2px_10px_rgba(0,0,0,0.05)]">
+        <input type="text" id="user-input" placeholder="Tanya sesuatu ke AI..." 
+            class="flex-1 border border-slate-300 rounded-full px-5 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all">
+        <button onclick="sendMessage()" class="bg-indigo-600 text-white px-8 py-3 rounded-full hover:bg-indigo-700 font-semibold transition-colors">
             Kirim
         </button>
     </div>
 
     <script>
-        // Masukkan API KEY Anda di sini (Dapatkan di aistudio.google.com)
+        // MASUKKAN API KEY GEMINI ANDA DI BAWAH INI
         const API_KEY = "AIzaSyAVhjzDV3Ib60pMOfRshBqlYLp2nlL6rTU";
 
         async function sendMessage() {
@@ -38,12 +39,14 @@
             if (!message) return;
 
             // Tampilkan pesan user
-            chatContainer.innerHTML += `<div class="bg-blue-100 p-3 rounded-lg shadow-sm max-w-[80%] ml-auto text-right font-medium">${message}</div>`;
+            chatContainer.innerHTML += `<div class="bg-indigo-600 text-white p-4 rounded-2xl shadow-sm max-w-[85%] ml-auto text-right">${message}</div>`;
             inputField.value = '';
 
             // Loading state
-            const loadingId = Date.now();
-            chatContainer.innerHTML += `<div id="${loadingId}" class="bg-gray-200 p-3 rounded-lg shadow-sm max-w-[80%] italic">Sedang berpikir...</div>`;
+            const loadingId = "loader-" + Date.now();
+            chatContainer.innerHTML += `<div id="${loadingId}" class="bg-white p-4 rounded-2xl shadow-sm max-w-[85%] border border-slate-200 flex items-center gap-2">
+                <span class="animate-bounce">●</span><span class="animate-bounce [animation-delay:0.2s]">●</span><span class="animate-bounce [animation-delay:0.4s]">●</span>
+            </div>`;
             chatContainer.scrollTop = chatContainer.scrollHeight;
 
             try {
@@ -58,11 +61,9 @@
                 const data = await response.json();
                 const aiResponse = data.candidates[0].content.parts[0].text;
 
-                // Ganti teks loading dengan jawaban asli
                 document.getElementById(loadingId).innerText = aiResponse;
-                document.getElementById(loadingId).classList.remove('italic');
             } catch (error) {
-                document.getElementById(loadingId).innerText = "Waduh, ada error! Cek API Key Anda.";
+                document.getElementById(loadingId).innerHTML = "<span class='text-red-500'>Error: Pastikan API Key benar dan internet lancar.</span>";
             }
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
